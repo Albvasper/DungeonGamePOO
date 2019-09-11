@@ -26,6 +26,8 @@ int main() {
 	short verbCase;
 	short roomSelector;
 	short roomNumber = 0;
+	unsigned short CurrentPx;
+	unsigned short CurrentPy;
 	std::string mainString;
 	std::vector<std::string>::iterator it;
 	std::multimap <short, std::string>::iterator it2;
@@ -51,8 +53,8 @@ int main() {
 	//Creo que no necesito el room ID en los parametros del cuarto pero no afecta ni sireve de nada
 	Room room011(0, 11, "Estas es la habitacion de SPAWN"); 
 	Room room111(1, 11, "Esta obscuro...");
-	Room room211(2, 11, "descripcion aqui");
-	Room room210(2, 10, "descripcion aqui2");
+	Room room211(2, 11, "hahah lol");
+	Room room210(2, 10, "AQUI NO QUIERES ESTAR");
 	Room room311(3, 11, "descripcion aqui2");
 
 	//--------------------------------------------------------------------------------------Doors
@@ -64,12 +66,17 @@ int main() {
 	room111.doorMap.insert(std::pair <unsigned short, Door>(1, d111_1));
 	room111.doorMap.insert(std::pair <unsigned short, Door>(2, d111_2));
 
-	Door d211_1(false, 1, 11); // Door - Room211 - Door1 (Back door)
-	Door d211_2(false, 2, 10); // Door - Room211 - Door2
+	Door d211_1(true, 1, 11); // Door - Room211 - Door1 (Back door)
+	Door d211_2(true, 2, 10); // Door - Room211 - Door2
 	Door d211_3(false, 3, 11); // Door - Room211 - Door3
 	room211.doorMap.insert(std::pair <unsigned short, Door>(1, d211_1));
 	room211.doorMap.insert(std::pair <unsigned short, Door>(2, d211_2));
 	room211.doorMap.insert(std::pair <unsigned short, Door>(3, d211_3));
+
+	Door d210_1(true, 2, 11); // Door - Room210 - Door1 (Back door)
+	Door d210_2(false, 2, 9);  // Door - Room210 - Door2
+	room210.doorMap.insert(std::pair <unsigned short, Door>(1, d210_1));
+	room210.doorMap.insert(std::pair <unsigned short, Door>(2, d210_2));
 
 	//--------------------------------------------------------------------------------------Objects
 	RayGun rg1;
@@ -87,7 +94,8 @@ int main() {
 	roomArr[0][11] = room011;
 	roomArr[1][11] = room111;
 	roomArr[2][11] = room211;
-	roomArr[2][10] = room211;
+	roomArr[2][10] = room210;
+	roomArr[3][11] = room311;
 
 	//--------------------------------------------------------------------------------------player
 	Player p1(100,50,50,0,11); // (HP, Power, Defense, posX, posY)
@@ -126,8 +134,11 @@ int main() {
 							if (roomSelector > 0) {
 								if (roomSelector <= roomArr[p1.GetPlayerPosX()][p1.GetPlayerPosY()].GetDoorN()) {
 									if (roomArr[p1.GetPlayerPosX()][p1.GetPlayerPosY()].doorMap[roomSelector].GetOpen() == true){
-										p1.SetPlayerPosX(roomArr[p1.GetPlayerPosX()][p1.GetPlayerPosY()].doorMap[roomSelector].GetPairedRoomIDx());
-										p1.SetPlayerPosY(roomArr[p1.GetPlayerPosX()][p1.GetPlayerPosY()].doorMap[roomSelector].GetPairedRoomIDy());
+										//Variables that prevent any misleading room position when setting x and y to the player
+										CurrentPx = p1.GetPlayerPosX(); 
+										CurrentPy = p1.GetPlayerPosY();
+										p1.SetPlayerPosX(roomArr[CurrentPx][CurrentPy].doorMap[roomSelector].GetPairedRoomIDx());
+										p1.SetPlayerPosY(roomArr[CurrentPx][CurrentPy].doorMap[roomSelector].GetPairedRoomIDy());
 										std::cout << "Entrando a la siguiente habitacion..." << std::endl;
 										system("pause");
 									}
